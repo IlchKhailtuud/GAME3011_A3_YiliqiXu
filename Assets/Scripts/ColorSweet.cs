@@ -28,8 +28,7 @@ public class ColorSweet : MonoBehaviour {
     private Dictionary<ColorType, Sprite> colorSpriteDict;
 
     private SpriteRenderer sprite;
-
-    //我们所拥有的颜色的数量
+    
     public int NumColors
     {
         get { return ColorSprites.Length; }

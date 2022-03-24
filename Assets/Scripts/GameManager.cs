@@ -6,11 +6,9 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    /// <summary>
-    /// 甜品相关的成员变量
-    /// </summary>
+    
     #region
-    //甜品的种类
+    
     public enum SweetsType
     {
         EMPTY,
@@ -19,10 +17,9 @@ public class GameManager : MonoBehaviour
         ROW_CLEAR,
         COLUMN_CLEAR,
         RAINBOWCANDY,
-        COUNT//标记类型
+        COUNT
     }
-
-    //甜品预制体的字典，我们可以通过甜品的种类来得到对应的甜品游戏物体
+    
     public Dictionary<SweetsType, GameObject> sweetPrefabDict;
 
     [System.Serializable]
@@ -35,17 +32,14 @@ public class GameManager : MonoBehaviour
     public SweetPrefab[] sweetPrefabs;
 
     public GameObject gridPrefab;
-
-    //甜品数组
+    
     private GameSweet[,] sweets;
-
-    //要交换的两个甜品对象
+    
     private GameSweet pressedSweet;
     private GameSweet enteredSweet;
 
     #endregion
-
-    //单例
+    
     private static GameManager _instance;
     public static GameManager Instance
     {
@@ -59,15 +53,12 @@ public class GameManager : MonoBehaviour
             _instance = value;
         }
     }
-
-    //大网格的行列数
+    
     public int xColumn;
     public int yRow;
-
-    //填充时间
+    
     public float fillTime;
-
-    //有关游戏UI显示的内容
+    
     public Text timeText;
 
     private float gameTime=60;
@@ -95,7 +86,6 @@ public class GameManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        //字典的实例化
         sweetPrefabDict = new Dictionary<SweetsType, GameObject>();
         for (int i = 0; i < sweetPrefabs.Length; i++)
         {
@@ -150,8 +140,7 @@ public class GameManager : MonoBehaviour
         if (gameTime<=0)
         {
             gameTime = 0;
-            //显示我们的失败面板
-            //播放失败面板的动画
+            
             gameOverPanel.SetActive(true);
             finalScoreText.text = playerScore.ToString();
             gameOver = true;
@@ -177,13 +166,10 @@ public class GameManager : MonoBehaviour
 
     public Vector3 CorrectPositon(int x, int y)
     {
-        //实际需要实例化巧克力块的X位置=GameManager位置的X坐标-大网格长度的一半+行列对应的X坐标
-        //实际需要实例化巧克力块的Y位置=GameManager位置的Y坐标+大网格高度的一半-行列对应的Y坐标
         return new Vector3(transform.position.x - xColumn / 2f + x, transform.position.y + yRow / 2f - y);
 
     }
-
-    //产生甜品的方法
+    
     public GameSweet CreateNewSweet(int x, int y, SweetsType type)
     {
         GameObject newSweet = Instantiate(sweetPrefabDict[type], CorrectPositon(x, y), Quaternion.identity);
@@ -194,8 +180,7 @@ public class GameManager : MonoBehaviour
 
         return sweets[x, y];
     }
-
-    //全部填充的方法
+    
     public IEnumerator AllFill()
     {
         bool needRefill = true;
@@ -207,30 +192,28 @@ public class GameManager : MonoBehaviour
             {
                 yield return new WaitForSeconds(fillTime);
             }
-
-            //清除所有我们已经匹配好的甜品
+            
             needRefill= ClearAllMatchedSweet();
         }
 
        
     }
-
-    //分步填充
+    
     public bool Fill()
     {
-        bool filledNotFinished = false;//判断本次填充是否完成
+        bool filledNotFinished = false;
 
         for (int y = yRow-2; y >=0; y--)
         {
             for (int x = 0; x < xColumn; x++)
             {
-                GameSweet sweet = sweets[x, y];//得到当前元素位置的甜品对象
+                GameSweet sweet = sweets[x, y];
 
-                if (sweet.CanMove())//如果无法移动，则无法往下填充 
+                if (sweet.CanMove())
                 {
                     GameSweet sweetBelow = sweets[x, y + 1];
 
-                    if (sweetBelow.Type==SweetsType.EMPTY)//垂直填充
+                    if (sweetBelow.Type==SweetsType.EMPTY)
                     {
                         Destroy(sweetBelow.gameObject);
                         sweet.MovedComponent.Move(x, y + 1,fillTime);
@@ -238,7 +221,7 @@ public class GameManager : MonoBehaviour
                         CreateNewSweet(x, y, SweetsType.EMPTY);
                         filledNotFinished = true;
                     }
-                    else         //斜向填充
+                    else         
                     {
                         for (int down = -1; down <= 1; down++)
                         {
@@ -252,7 +235,7 @@ public class GameManager : MonoBehaviour
 
                                     if (downSweet.Type == SweetsType.EMPTY)
                                     {
-                                        bool canfill = true;//用来判断垂直填充是否可以满足填充要求
+                                        bool canfill = true;
 
                                         for (int aboveY = y; aboveY >= 0; aboveY--)
                                         {
@@ -287,8 +270,7 @@ public class GameManager : MonoBehaviour
                 
             }
         }
-
-        //最上排的特殊情况
+        
         for (int x = 0; x < xColumn; x++)
         {
             GameSweet sweet = sweets[x, 0];
@@ -308,14 +290,12 @@ public class GameManager : MonoBehaviour
 
         return filledNotFinished;
     }
-
-    //甜品是否相邻的判断方法
+    
     private bool IsFriend(GameSweet sweet1,GameSweet sweet2)
     {
         return (sweet1.X == sweet2.X && Mathf.Abs(sweet1.Y - sweet2.Y) == 1) || (sweet1.Y == sweet2.Y && Mathf.Abs(sweet1.X - sweet2.X) == 1);
     }
-
-    //交换两个甜品的方法
+    
     private void ExchangeSweets(GameSweet sweet1, GameSweet sweet2)
     {
         if (sweet1.CanMove()&&sweet2.CanMove())
@@ -371,10 +351,7 @@ public class GameManager : MonoBehaviour
             
         }
     }
-
-    /// <summary>
-    /// 玩家对我们甜品操作进行拖拽处理的方法
-    /// </summary>
+    
     #region
     public void PressSweet(GameSweet sweet)
     {
@@ -407,12 +384,8 @@ public class GameManager : MonoBehaviour
         
     }
     #endregion
-
-    /// <summary>
-    /// 清除匹配的方法
-    /// </summary>
+    
     #region
-    //匹配方法
     public List<GameSweet> MatchSweets(GameSweet sweet,int newX,int newY)
     {
         if (sweet.CanColor())
@@ -421,11 +394,9 @@ public class GameManager : MonoBehaviour
             List<GameSweet> matchRowSweets = new List<GameSweet>();
             List<GameSweet> matchLineSweets = new List<GameSweet>();
             List<GameSweet> finishedMatchingSweets = new List<GameSweet>();
-
-            //行匹配
+            
             matchRowSweets.Add(sweet);
-
-            //i=0代表往左，i=1代表往右
+            
             for (int i = 0; i <=1; i++)
             {
                 for (int xDistance = 1; xDistance < xColumn; xDistance++)
