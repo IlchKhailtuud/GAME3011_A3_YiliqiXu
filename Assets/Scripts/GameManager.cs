@@ -86,8 +86,8 @@ public class GameManager : MonoBehaviour
     public GameObject gameWinPanel;
 
     public Text finalScoreText;
-    
-    
+
+    public Difficulty difficulty = Difficulty.HARD;
     
     private void Awake()
     {
@@ -126,23 +126,24 @@ public class GameManager : MonoBehaviour
                 CreateNewSweet(x, y, SweetsType.EMPTY);
             }
         }
-        
-        //if ()
-            
-        Destroy(sweets[4, 4].gameObject);
-        CreateNewSweet(4, 4, SweetsType.BARRIER);
-        Destroy(sweets[4, 3].gameObject);
-        CreateNewSweet(4, 3, SweetsType.BARRIER);
-        Destroy(sweets[1, 1].gameObject);
-        CreateNewSweet(1, 1, SweetsType.BARRIER);
-        Destroy(sweets[1, 1].gameObject);
-        CreateNewSweet(1, 1, SweetsType.BARRIER);
-        Destroy(sweets[7, 1].gameObject);
-        CreateNewSweet(7, 1, SweetsType.BARRIER);
-        Destroy(sweets[1, 6].gameObject);
-        CreateNewSweet(1, 6, SweetsType.BARRIER);
-        Destroy(sweets[7, 6].gameObject);
-        CreateNewSweet(7, 6, SweetsType.BARRIER);
+
+        if (difficulty == Difficulty.NORMAL || difficulty == Difficulty.HARD)
+        {
+            Destroy(sweets[4, 4].gameObject);
+            CreateNewSweet(4, 4, SweetsType.BARRIER);
+            Destroy(sweets[4, 3].gameObject);
+            CreateNewSweet(4, 3, SweetsType.BARRIER);
+            Destroy(sweets[1, 1].gameObject);
+            CreateNewSweet(1, 1, SweetsType.BARRIER);
+            Destroy(sweets[1, 1].gameObject);
+            CreateNewSweet(1, 1, SweetsType.BARRIER);
+            Destroy(sweets[7, 1].gameObject);
+            CreateNewSweet(7, 1, SweetsType.BARRIER);
+            Destroy(sweets[1, 6].gameObject);
+            CreateNewSweet(1, 6, SweetsType.BARRIER);
+            Destroy(sweets[7, 6].gameObject);
+            CreateNewSweet(7, 6, SweetsType.BARRIER);
+        }
 
         StartCoroutine(AllFill());
     }
@@ -154,9 +155,18 @@ public class GameManager : MonoBehaviour
         if (gameTime<=0)
         {
             gameTime = 0;
+
+            if (playerScore >= targetScore)
+            {
+                finalScoreText.text = playerScore.ToString();
+                gameWinPanel.SetActive(true);
+            }
+            else
+            {
+                finalScoreText.text = playerScore.ToString();
+                gameOverPanel.SetActive(true);    
+            }
             
-            gameOverPanel.SetActive(true);
-            finalScoreText.text = playerScore.ToString();
             gameOver = true;
         }
         timeText.text = gameTime.ToString("0");
@@ -664,16 +674,16 @@ public class GameManager : MonoBehaviour
 
                         if (matchList.Count==4)
                         {
-                            //if ()
                             ////我们是否产生特殊甜品
-                            specialSweetsType =(SweetsType)Random.Range((int)SweetsType.ROW_CLEAR, (int)SweetsType.COLUMN_CLEAR);
+                            if (difficulty > 0)
+                                specialSweetsType =(SweetsType)Random.Range((int)SweetsType.ROW_CLEAR, (int)SweetsType.COLUMN_CLEAR);
                         }
                         
                         else if (matchList.Count>=5)
                         {
-                            //if ()
                             //5个的话我们就产生彩虹糖
-                            specialSweetsType = SweetsType.RAINBOWCANDY;
+                            if (difficulty == Difficulty.HARD)
+                                specialSweetsType = SweetsType.RAINBOWCANDY;
                         }
 
                         for (int i = 0; i < matchList.Count; i++)
