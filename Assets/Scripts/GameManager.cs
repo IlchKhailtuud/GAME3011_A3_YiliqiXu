@@ -19,7 +19,14 @@ public class GameManager : MonoBehaviour
         RAINBOWCANDY,
         COUNT
     }
-    
+
+    public enum Difficulty
+    {
+        EASY,
+        NORMAL,
+        HARD,
+    }
+
     public Dictionary<SweetsType, GameObject> sweetPrefabDict;
 
     [System.Serializable]
@@ -61,31 +68,37 @@ public class GameManager : MonoBehaviour
     
     public Text timeText;
 
-    private float gameTime=60;
+    private float gameTime = 60;
 
     private bool gameOver;
 
     public int playerScore;
-
+    public int targetScore = 200;
+    
     public Text playerScoreText;
-
+    public Text targetScoreText;
+    
     private float addScoreTime;
 
     private float currentScore;
 
     public GameObject gameOverPanel;
+    public GameObject gameWinPanel;
 
     public Text finalScoreText;
-
+    
+    
+    
     private void Awake()
     {
         _instance = this;
     }
-
-
+    
     // Use this for initialization
     void Start()
     {
+        targetScoreText.text = targetScore.ToString(); 
+        
         sweetPrefabDict = new Dictionary<SweetsType, GameObject>();
         for (int i = 0; i < sweetPrefabs.Length; i++)
         {
@@ -113,7 +126,9 @@ public class GameManager : MonoBehaviour
                 CreateNewSweet(x, y, SweetsType.EMPTY);
             }
         }
-
+        
+        //if ()
+            
         Destroy(sweets[4, 4].gameObject);
         CreateNewSweet(4, 4, SweetsType.BARRIER);
         Destroy(sweets[4, 3].gameObject);
@@ -135,7 +150,6 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-      
         gameTime -= Time.deltaTime;
         if (gameTime<=0)
         {
@@ -153,7 +167,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            if (currentScore<playerScore)
+            if (currentScore < playerScore)
             {
                 currentScore++;
                 playerScoreText.text = currentScore.ToString();
@@ -433,15 +447,11 @@ public class GameManager : MonoBehaviour
                     finishedMatchingSweets.Add(matchRowSweets[i]);
                 }
             }
-
-            //L T型匹配
-            //检查一下当前行遍历列表中的元素数量是否大于3
+            
             if (matchRowSweets.Count>=3)
             {
                 for (int i = 0; i < matchRowSweets.Count; i++)
                 {
-                    //行匹配列表中满足匹配条件的每个元素上下依次进行列遍历
-                    // 0代表上方 1代表下方
                     for (int j = 0; j <=1; j++)
                     {
                         for (int yDistance = 1; yDistance < yRow; yDistance++)
@@ -495,10 +505,8 @@ public class GameManager : MonoBehaviour
             matchLineSweets.Clear();
 
             matchLineSweets.Add(sweet);
-
-            //列匹配
-
-            //i=0代表往左，i=1代表往右
+            
+            
             for (int i = 0; i <= 1; i++)
             {
                 for (int yDistance = 1; yDistance < yRow; yDistance++)
@@ -535,15 +543,11 @@ public class GameManager : MonoBehaviour
                     finishedMatchingSweets.Add(matchLineSweets[i]);
                 }
             }
-
-            //L T型匹配
-            //检查一下当前行遍历列表中的元素数量是否大于3
+            
             if (matchLineSweets.Count >= 3)
             {
                 for (int i = 0; i < matchLineSweets.Count; i++)
                 {
-                    //行匹配列表中满足匹配条件的每个元素上下依次进行列遍历
-                    // 0代表上方 1代表下方
                     for (int j = 0; j <= 1; j++)
                     {
                         for (int xDistance= 1; xDistance < xColumn; xDistance++)
@@ -596,8 +600,7 @@ public class GameManager : MonoBehaviour
 
         return null;
     }
-
-    //清除方法
+    
     public bool ClearSweet(int x, int y)
     {
         if (sweets[x,y].CanClear()&&!sweets[x,y].ClearedComponent.IsClearing)
@@ -611,9 +614,8 @@ public class GameManager : MonoBehaviour
 
         return false;
     }
-
-    //清除饼干的方法
-    private void ClearBarrier(int x,int y)//坐标是被消除掉的甜品对象的坐标
+    
+    private void ClearBarrier(int x,int y)
     {
         for (int friendX = x-1; friendX <= x+1; friendX++)
         {
@@ -639,8 +641,7 @@ public class GameManager : MonoBehaviour
             }
         }
     }
-
-    //清除全部完成匹配的甜品
+    
     private bool ClearAllMatchedSweet()
     {
         bool needRefill = false;
@@ -655,7 +656,7 @@ public class GameManager : MonoBehaviour
 
                     if (matchList!=null)
                     {
-                        SweetsType specialSweetsType = SweetsType.COUNT;//我们是否产生特殊甜品
+                        SweetsType specialSweetsType = SweetsType.COUNT;
 
                         GameSweet randomSweet = matchList[Random.Range(0, matchList.Count)];
                         int specialSweetX = randomSweet.X;
@@ -663,11 +664,15 @@ public class GameManager : MonoBehaviour
 
                         if (matchList.Count==4)
                         {
+                            //if ()
+                            ////我们是否产生特殊甜品
                             specialSweetsType =(SweetsType)Random.Range((int)SweetsType.ROW_CLEAR, (int)SweetsType.COLUMN_CLEAR);
                         }
-                        //5个的话我们就产生彩虹糖
+                        
                         else if (matchList.Count>=5)
                         {
+                            //if ()
+                            //5个的话我们就产生彩虹糖
                             specialSweetsType = SweetsType.RAINBOWCANDY;
                         }
 
@@ -687,16 +692,12 @@ public class GameManager : MonoBehaviour
                             {
                                 newSweet.ColoredComponent.SetColor(matchList[0].ColoredComponent.Color);
                             }
-                            //加上彩虹糖的特殊类型的产生
+                            
                             else if (specialSweetsType==SweetsType.RAINBOWCANDY&&newSweet.CanColor())
                             {
                                 newSweet.ColoredComponent.SetColor(ColorSweet.ColorType.ANY);
                             }
-
                         }
-
-
-
                     }
                 }
             }
@@ -715,8 +716,7 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene(1);
     }
-
-    //清除行的方法
+    
     public void ClearRow(int row)
     {
         for (int x = 0; x < xColumn; x++)
@@ -724,8 +724,7 @@ public class GameManager : MonoBehaviour
             ClearSweet(x, row);
         }
     }
-
-    //清除列的方法
+    
     public void ClearColumn(int column)
     {
         for (int y = 0; y < yRow; y++)
@@ -733,8 +732,7 @@ public class GameManager : MonoBehaviour
             ClearSweet(column, y);
         }
     }
-
-    //清除颜色的方法
+    
     public void ClearColor(ColorSweet.ColorType color)
     {
         for (int x = 0; x < xColumn; x++)
