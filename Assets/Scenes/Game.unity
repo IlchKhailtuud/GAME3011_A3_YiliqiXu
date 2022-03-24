@@ -4124,12 +4124,13 @@ MonoBehaviour:
   fillTime: 0.1
   timeText: {fileID: 1896851445}
   playerScore: 0
-  targetScore: 0
   playerScoreText: {fileID: 1416804957}
   targetScoreText: {fileID: 650939496}
   gameOverPanel: {fileID: 476105590}
   gameWinPanel: {fileID: 99248471}
-  finalScoreText: {fileID: 2086250939}
+  finalLoseScoreText: {fileID: 2086250939}
+  finalWinScoreText: {fileID: 827130748}
+  difficultySo: {fileID: 11400000, guid: 5b2ff6f8abf187f45b8de448435503a5, type: 2}
 --- !u!4 &1357357100
 Transform:
   m_ObjectHideFlags: 0

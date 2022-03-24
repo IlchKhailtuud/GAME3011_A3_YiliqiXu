@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5548469060002203569}
   - component: {fileID: 5548469060002203568}
   - component: {fileID: 5548469060002203567}
+  - component: {fileID: 1145200262307421701}
   m_Layer: 5
   m_Name: But_Difficulty
   m_TagString: Untagged
@@ -134,6 +135,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &1145200262307421701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5548469060002203565}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0e694cf7bdede149be5eb299f4c7316, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  difficultySo: {fileID: 11400000, guid: 5b2ff6f8abf187f45b8de448435503a5, type: 2}
 --- !u!1 &5548469060478062270
 GameObject:
   m_ObjectHideFlags: 0

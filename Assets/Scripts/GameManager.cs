@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
     
     #region
-    
     public enum SweetsType
     {
         EMPTY,
@@ -19,14 +19,7 @@ public class GameManager : MonoBehaviour
         RAINBOWCANDY,
         COUNT
     }
-
-    public enum Difficulty
-    {
-        EASY,
-        NORMAL,
-        HARD,
-    }
-
+    
     public Dictionary<SweetsType, GameObject> sweetPrefabDict;
 
     [System.Serializable]
@@ -68,12 +61,12 @@ public class GameManager : MonoBehaviour
     
     public Text timeText;
 
-    private float gameTime = 60;
+    private float gameTime;
 
     private bool gameOver;
 
     public int playerScore;
-    public int targetScore = 200;
+    private int targetScore = 150;
     
     public Text playerScoreText;
     public Text targetScoreText;
@@ -85,9 +78,13 @@ public class GameManager : MonoBehaviour
     public GameObject gameOverPanel;
     public GameObject gameWinPanel;
 
-    public Text finalScoreText;
+    public Text finalLoseScoreText;
+    public Text finalWinScoreText;
 
-    public Difficulty difficulty = Difficulty.HARD;
+    private Difficulty difficulty;
+
+    [SerializeField] 
+    private DifficultySO difficultySo;
     
     private void Awake()
     {
@@ -97,7 +94,21 @@ public class GameManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        targetScoreText.text = targetScore.ToString(); 
+        targetScoreText.text = targetScore.ToString();
+        difficulty = difficultySo.GameDifficulty;
+        
+        switch (difficulty)
+        {
+            case Difficulty.EASY:
+                gameTime = 100;
+                break;
+            case Difficulty.NORMAL:
+                gameTime = 75;
+                break;
+            case Difficulty.HARD:
+                gameTime = 60;
+                break;
+        }
         
         sweetPrefabDict = new Dictionary<SweetsType, GameObject>();
         for (int i = 0; i < sweetPrefabs.Length; i++)
@@ -158,12 +169,12 @@ public class GameManager : MonoBehaviour
 
             if (playerScore >= targetScore)
             {
-                finalScoreText.text = playerScore.ToString();
+                finalWinScoreText.text = playerScore.ToString();
                 gameWinPanel.SetActive(true);
             }
             else
             {
-                finalScoreText.text = playerScore.ToString();
+                finalLoseScoreText.text = playerScore.ToString();
                 gameOverPanel.SetActive(true);    
             }
             
@@ -629,7 +640,7 @@ public class GameManager : MonoBehaviour
     {
         for (int friendX = x-1; friendX <= x+1; friendX++)
         {
-            if (friendX!=x&&friendX>=0&&friendX<xColumn)
+            if (friendX!=x&&friendX>=0 && friendX<xColumn)
             {
                 if (sweets[friendX,y].Type==SweetsType.BARRIER&&sweets[friendX,y].CanClear())
                 {
@@ -674,14 +685,13 @@ public class GameManager : MonoBehaviour
 
                         if (matchList.Count==4)
                         {
-                            ////我们是否产生特殊甜品
                             if (difficulty > 0)
                                 specialSweetsType =(SweetsType)Random.Range((int)SweetsType.ROW_CLEAR, (int)SweetsType.COLUMN_CLEAR);
                         }
                         
                         else if (matchList.Count>=5)
                         {
-                            //5个的话我们就产生彩虹糖
+                            
                             if (difficulty == Difficulty.HARD)
                                 specialSweetsType = SweetsType.RAINBOWCANDY;
                         }
